@@ -1,5 +1,7 @@
 # Copyright (c) Microsoft. All rights reserved.
 
+import os
+import sys
 import asyncio
 import logging
 
@@ -28,8 +30,6 @@ kernel = Kernel()
 #     "filepathField": "source_file",
 # }
 
-import sys
-import os
 
 current_dir = os.path.abspath('')
 parent_dir = os.path.dirname(current_dir)
@@ -38,16 +38,18 @@ api_key = os.getenv("AZURE_AISEARCH_API_KEY")
 
 # Create the data source settings
 azure_ai_search_settings = AzureAISearchSettings(
-    endpoint="https://sckw.search.windows.net", 
-    index_name="ewog-index", 
+    endpoint="https://sckw.search.windows.net",
+    index_name="ewog-index",
     api_key=api_key)
 
-az_source = AzureAISearchDataSource.from_azure_ai_search_settings(azure_ai_search_settings=azure_ai_search_settings)
+az_source = AzureAISearchDataSource.from_azure_ai_search_settings(
+    azure_ai_search_settings=azure_ai_search_settings)
 extra = ExtraBody(data_sources=[az_source])
 
 kernel = Kernel()
 
-kernel.add_service(AzureChatCompletion(service_id="chat", env_file_path="../.env"))
+kernel.add_service(AzureChatCompletion(
+    service_id="chat", env_file_path="../.env"))
 
 chat_function = kernel.add_function(
     prompt="{{$chat_history}}{{$user_input}}",
@@ -65,7 +67,8 @@ execution_settings_extra = AzureChatPromptExecutionSettings(
 
 history = ChatHistory()
 
-history.add_assistant_message("Hi there, I'm the Fuzzy Friends of Endor customer service assistant. We love and sell live Ewogs. I'm curteous and helpful.")
+history.add_assistant_message(
+    "Hi there, I'm the Fuzzy Friends of Endor customer service assistant. We love and sell live Ewogs. I'm curteous and helpful.")
 
 arguments = KernelArguments(settings=execution_settings_extra)
 
@@ -128,4 +131,3 @@ async def main() -> None:
 
 if __name__ == "__main__":
     asyncio.run(main())
-
